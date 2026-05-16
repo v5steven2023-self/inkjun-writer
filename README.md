@@ -2,19 +2,15 @@
 
 一个纯 Markdown 驱动的公众号长文写作 Skill。
 
-它的目标不是只会“生成文章”，而是覆盖一整轮写作协作：
+这个仓库现在只保留两类核心内容：
 
-- 讨论选题、角度和受众
-- 产出提纲和标题方向
-- 起草完整长文
-- 修改已有草稿
-- 复盘本次写作，并把经验沉淀到 Markdown 记忆里
+- `SKILL.md` 里的 4 种写作模式
+- `references/rewrite-few-shots.md` 里的 few-shot 改写规则
 
 ## 设计原则
 
-- 轻量：只用 `SKILL.md` 和 Markdown 参考文件
+- 轻量：只保留真正影响写作输出的规则
 - 可移植：整个 skill 直接放在仓库根目录，方便复制和分发
-- 可积累：把长期偏好和单次经验分开记录，避免记忆混乱
 - 可协作：先讨论，再起草，再改稿，而不是一上来机械生成全文
 
 ## 仓库结构
@@ -23,16 +19,36 @@
 .
 ├── README.md
 ├── SKILL.md
+├── tests/
+│   ├── README.md
+│   └── cases/
+│       └── rewrite-demo/
+│           ├── input.md
+│           ├── notes.md
+│           └── output.md
 └── references/
-    ├── author-profile.md
-    └── lessons-learned.md
+    └── rewrite-few-shots.md
 ```
 
 ## 文件说明
 
-- `SKILL.md`：技能主文件，定义触发条件、工作模式、输出准则和记忆更新规则
-- `references/author-profile.md`：记录长期稳定的写作偏好
-- `references/lessons-learned.md`：记录每次任务后的短复盘，供下次先读后写
+- `SKILL.md`：技能主文件，只保留 4 种模式和 few-shot 使用规则
+- `references/rewrite-few-shots.md`：记录高频句法问题和 few-shot 改写示例，默认用于起草长文和改写长文
+- `tests/`：放手动测试 skill 的样例，不参与 skill 本体定义
+
+## 测试目录约定
+
+为了方便后续持续测试，推荐把测试样例都放进 `tests/cases/<case-name>/`：
+
+- `input.md`：测试输入
+- `output.md`：期望输出，或当前一版可接受输出
+- `notes.md`：测试目的、关注点、使用方式
+
+这样做的好处很直接：
+
+- skill 定义和测试样例分离，不会把根目录越堆越乱
+- 每个测试 case 可以单独演进，方便比较不同版本输出
+- 后续如果补更多场景，比如 `draft-demo`、`outline-demo`，结构也能继续复用
 
 ## 这个 Skill 能做什么
 
@@ -41,7 +57,6 @@
 - 你想写一篇公众号长文，但主题还没聊清楚
 - 你有零散素材，想整理成可发文章
 - 你已经有初稿，想让它更有结构、更有判断、更不像 AI 写的
-- 你想长期积累自己的写作偏好，让后续输出越来越贴近你的风格
 
 ## 使用方式
 
@@ -49,10 +64,13 @@
 
 典型流程是：
 
-1. 开始任务前先读 `references/author-profile.md` 和 `references/lessons-learned.md`
-2. 根据用户诉求进入讨论、提纲、起草、改稿或复盘模式
-3. 完成任务后，把稳定偏好写回 `author-profile.md`
-4. 把本次经验追加到 `lessons-learned.md`
+1. 根据用户诉求进入讨论、提纲、起草或改稿模式
+2. 如果进入起草或改稿模式，额外读取 `references/rewrite-few-shots.md`
+3. 用 few-shot 约束句法，避免预制转折和模板感
+
+测试改稿模式时，可以直接针对某个 case 运行，例如：
+
+`参考 SKILL.md 和 references/rewrite-few-shots.md，把 tests/cases/rewrite-demo/input.md 改写到 tests/cases/rewrite-demo/output.md`
 
 ## 为什么不用额外工具
 
@@ -60,14 +78,14 @@
 
 - Markdown 更容易被人理解和修改
 - 拷贝到别的仓库时几乎没有迁移成本
-- 记忆文件可以直接人工检查，不会变成黑盒
+- few-shot 规则可以直接人工检查，不会变成黑盒
 
 ## 适合继续扩展的方向
 
 如果后续需要，依然可以保持 Markdown 驱动，继续扩展：
 
-- 增加不同文风的参考模板
-- 增加标题库和开头库
-- 增加不同文章类型的结构提示
+- 增加更多高价值 few-shot
+- 增加不同文章类型的提纲提示
+- 增加少量标题或开头参考
 
 但默认建议先保持轻量，不要过早做重。
