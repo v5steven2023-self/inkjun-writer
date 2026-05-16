@@ -21,8 +21,17 @@
 ├── SKILL.md
 ├── tests/
 │   ├── README.md
-│   └── cases/
-│       └── rewrite-demo/
+│   ├── cases/
+│   │   ├── discuss/
+│   │   ├── outline/
+│   │   ├── draft/
+│   │   └── rewrite/
+│   │       └── keep-core-judgment/
+│   │           ├── input.md
+│   │           ├── notes.md
+│   │           └── output.md
+│   └── templates/
+│       └── case/
 │           ├── input.md
 │           ├── notes.md
 │           └── output.md
@@ -38,17 +47,26 @@
 
 ## 测试目录约定
 
-为了方便后续持续测试，推荐把测试样例都放进 `tests/cases/<case-name>/`：
+为了方便后续持续测试，推荐把测试样例按模式放进 `tests/cases/<mode>/<case-name>/`：
 
 - `input.md`：测试输入
 - `output.md`：期望输出，或当前一版可接受输出
-- `notes.md`：测试目的、关注点、使用方式
+- `notes.md`：测试目的、关注点、使用方式、通过标准
 
 这样做的好处很直接：
 
 - skill 定义和测试样例分离，不会把根目录越堆越乱
+- 先按模式分层，再按 case 拆分，后续补场景时不会混在一起
 - 每个测试 case 可以单独演进，方便比较不同版本输出
-- 后续如果补更多场景，比如 `draft-demo`、`outline-demo`，结构也能继续复用
+
+建议优先按“要验证的能力”或“要防的退化”命名 case，例如：
+
+- `rewrite/keep-core-judgment`
+- `rewrite/reduce-ai-tone`
+- `draft/from-outline`
+- `outline/opinion-article`
+
+新增测试时，直接复制 `tests/templates/case/` 最省事。
 
 ## 这个 Skill 能做什么
 
@@ -70,7 +88,7 @@
 
 测试改稿模式时，可以直接针对某个 case 运行，例如：
 
-`参考 SKILL.md 和 references/rewrite-few-shots.md，把 tests/cases/rewrite-demo/input.md 改写到 tests/cases/rewrite-demo/output.md`
+`参考 SKILL.md 和 references/rewrite-few-shots.md，把 tests/cases/rewrite/keep-core-judgment/input.md 改写到 tests/cases/rewrite/keep-core-judgment/output.md`
 
 ## 为什么不用额外工具
 
