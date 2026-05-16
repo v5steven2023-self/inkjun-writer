@@ -32,8 +32,8 @@
 
 ## 文件说明
 
-- `SKILL.md`：技能主文件，只保留 4 种模式和 few-shot 使用规则
-- `references/rewrite-few-shots.md`：记录高频句法问题和 few-shot 改写示例，默认用于起草长文和改写长文
+- `SKILL.md`：技能主文件，包含适用/不适用边界、4 种模式、改稿深度与输出自检要求
+- `references/rewrite-few-shots.md`：记录高频句法问题、L0/L1/L2 分级、Gate 门禁与 few-shot 改写示例
 - `tests/`：放手动测试 skill 的样例，不参与 skill 本体定义
 
 ## 测试目录约定
