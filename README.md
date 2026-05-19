@@ -1,17 +1,38 @@
 # inkjun-writer
 
-一个纯 Markdown 驱动的公众号长文写作 Skill。
+一个面向中文公众号长文写作的 Markdown Skill。
 
-这个仓库现在只保留两类核心内容：
+把长文写作拆成清晰流程：先判断该讨论还是该动笔；一旦进入起草或改写，就按固定顺序处理逻辑、信息、语法和 few-shot 约束，尽量把 AI 常见的空话、模板感和语病压下去。
 
-- `SKILL.md` 里的 4 种写作模式
-- `references/rewrite-few-shots.md` 里的 few-shot 改写规则
+## 当前实际流程
 
-## 设计原则
+仓库当前以 [`SKILL.md`](./SKILL.md) 为准，核心只有 2 个模式：
 
-- 轻量：只保留真正影响写作输出的规则
-- 可移植：整个 skill 直接放在仓库根目录，方便复制和分发
-- 可协作：先讨论，再起草，再改稿，而不是一上来机械生成全文
+- 讨论模式：当信息不足、目标不清，或用户想先把选题、读者、文章目标聊清楚时使用，最终产出提纲
+- 起草模式：当用户已经有提纲、素材或原文时使用，覆盖起草、修改、改写、重构
+
+如果用户同时需要“先聊清楚，再写出来”，默认流程是：
+
+`讨论模式 -> 起草模式`
+
+## 起草模式的强制步骤
+
+起草模式不是直接动笔，而是按下面顺序推进：
+
+1. `逻辑重构`
+2. `信息扩充`
+3. `信息精炼`
+4. `语法检查`
+5. `读取 few-shots`
+6. `起草 / 改写`
+
+其中有几个关键约束：
+
+- 逻辑重构是必做步骤，而且要先给出重构后的大纲，等用户确认后再继续
+- 信息不足时要明确标 `待补`，不能编造案例、数据或事实
+- 语法检查要求把文本拆成独立句子，逐句检查主语缺失、宾语缺失、主谓搭配不当、动宾搭配不当
+- few-shot 规则来自 [`references/rewrite-few-shots.md`](./references/rewrite-few-shots.md)，在起草模式中是最高优先级规则源
+- 输出前必须完成 L0/L1/L2 判定和 Gate 1~3 自检；Gate 不通过时，不应输出终稿
 
 ## 仓库结构
 
@@ -19,92 +40,29 @@
 .
 ├── README.md
 ├── SKILL.md
-├── tests/
-│   ├── README.md
-│   ├── cases/
-│   │   ├── discuss/
-│   │   ├── outline/
-│   │   ├── draft/
-│   │   └── rewrite/
-│   │       └── keep-core-judgment/
-│   │           ├── input.md
-│   │           ├── notes.md
-│   │           └── output.md
-│   └── templates/
-│       └── case/
-│           ├── input.md
-│           ├── notes.md
-│           └── output.md
 └── references/
     └── rewrite-few-shots.md
 ```
 
 ## 文件说明
 
-- `SKILL.md`：技能主文件，包含适用/不适用边界、4 种模式、改稿深度与输出自检要求
-- `references/rewrite-few-shots.md`：记录高频句法问题、L0/L1/L2 分级、Gate 门禁与 few-shot 改写示例
-- `tests/`：放手动测试 skill 的样例，不参与 skill 本体定义
+- [`SKILL.md`](./SKILL.md)：技能主文件，定义适用边界、模式切换条件、讨论模式产出、起草模式执行顺序和输出前自检
+- [`references/rewrite-few-shots.md`](./references/rewrite-few-shots.md)：起草模式专用规则，定义 L0/L1/L2、Gate 1~3，以及具体改写示例
 
-## 测试目录约定
+## 怎么使用这个 Skill
 
-为了方便后续持续测试，推荐把测试样例按模式放进 `tests/cases/<mode>/<case-name>/`：
+作为本地 skill 使用时，入口就是 [`SKILL.md`](./SKILL.md)。
 
-- `input.md`：测试输入
-- `output.md`：期望输出，或当前一版可接受输出
-- `notes.md`：测试目的、关注点、使用方式、通过标准
+典型调用思路：
 
-这样做的好处很直接：
+1. 先根据用户诉求判断进入讨论模式还是起草模式
+2. 如果进入起草模式，必须继续读取 [`references/rewrite-few-shots.md`](./references/rewrite-few-shots.md)
+3. 按 `逻辑重构 -> 信息扩充 -> 信息精炼 -> 语法检查 -> few-shots -> 起草/改写` 的顺序执行
+4. 输出前补充 L0/L1/Gate 自检，不通过就继续改
 
-- skill 定义和测试样例分离，不会把根目录越堆越乱
-- 先按模式分层，再按 case 拆分，后续补场景时不会混在一起
-- 每个测试 case 可以单独演进，方便比较不同版本输出
+## 致谢
 
-建议优先按“要验证的能力”或“要防的退化”命名 case，例如：
+这个 Skill 的整理和迭代，受到了下面两个项目的启发。这里单独致谢：
 
-- `rewrite/keep-core-judgment`
-- `rewrite/reduce-ai-tone`
-- `draft/from-outline`
-- `outline/opinion-article`
-- `rewrite/reduce-verbosity`
-
-新增测试时，直接复制 `tests/templates/case/` 最省事。
-
-## 这个 Skill 能做什么
-
-适合这些场景：
-
-- 你想写一篇公众号长文，但主题还没聊清楚
-- 你有零散素材，想整理成可发文章
-- 你已经有初稿，想让它更有结构、更有判断、更不像 AI 写的
-
-## 使用方式
-
-把这个仓库作为一个本地 skill 使用时，核心入口就是 `SKILL.md`。
-
-典型流程是：
-
-1. 根据用户诉求进入讨论、提纲、起草或改稿模式
-2. 如果进入起草或改稿模式，额外读取 `references/rewrite-few-shots.md`
-3. 用 few-shot 约束句法，避免预制转折和模板感
-
-测试改稿模式时，可以直接针对某个 case 运行，例如：
-
-`参考 SKILL.md 和 references/rewrite-few-shots.md，把 tests/cases/rewrite/keep-core-judgment/input.md 改写到 tests/cases/rewrite/keep-core-judgment/output.md`
-
-## 为什么不用额外工具
-
-这个 skill 刻意不引入脚本、数据库或复杂配置，原因很直接：
-
-- Markdown 更容易被人理解和修改
-- 拷贝到别的仓库时几乎没有迁移成本
-- few-shot 规则可以直接人工检查，不会变成黑盒
-
-## 适合继续扩展的方向
-
-如果后续需要，依然可以保持 Markdown 驱动，继续扩展：
-
-- 增加更多高价值 few-shot
-- 增加不同文章类型的提纲提示
-- 增加少量标题或开头参考
-
-但默认建议先保持轻量，不要过早做重。
+- 卡兹克：https://github.com/KKKKhazix/khazix-skills
+- 汤姆喵：https://github.com/tomczhang/tommiao-writer
